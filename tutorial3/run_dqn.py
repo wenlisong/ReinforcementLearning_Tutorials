@@ -32,7 +32,7 @@ def train():
                 break
             step += 1
         episode += 1
-        if episode % 100 == 0:
+        if episode % 500 == 0:
             RL.saver.save(RL.sess, 'saved_net_params/' + 'maze-dqn', global_step=episode)
             print('Save params at episode {0}'.format(episode))
             break
