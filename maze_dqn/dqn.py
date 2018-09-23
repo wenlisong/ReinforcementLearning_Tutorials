@@ -56,15 +56,6 @@ class DeepQNetwork:
         n_hidden_units = 10
         # eval_net
         with tf.variable_scope('eval_net'):
-            # with tf.variable_scope('e_fcl1'):
-            #     w1 = tf.get_variable('w1', [self.n_features, n_hidden_units], initializer=w_initializer)
-            #     b1 = tf.get_variable('b1', [1, n_hidden_units], initializer=b_initializer)
-            #     e_l1 = tf.nn.relu(tf.matmul(self.s, w1) + b1)
-            #
-            # with tf.variable_scope('e_fcl2'):
-            #     w2 = tf.get_variable('w2', [n_hidden_units, n_hidden_units], initializer=w_initializer)
-            #     b2 = tf.get_variable('b2', [1, n_hidden_units], initializer=b_initializer)
-            #     e_l2 = tf.matmul(e_l1, w2) + b2
             e_l1 = tf.layers.dense(self.s, n_hidden_units, tf.nn.relu, kernel_initializer=w_initializer,
                                    bias_initializer=b_initializer, name='e_fcl1')
             e_l2 = tf.layers.dense(e_l1, n_hidden_units, tf.nn.relu, kernel_initializer=w_initializer,
