@@ -49,6 +49,6 @@ if __name__ == '__main__':
                       e_greedy=0.9,
                       replace_target_iter=200,
                       memory_size=2000,
-                      use_pre_weights=True)
+                      use_pre_weights=False)
     env.after(1000, train())
     env.mainloop()
