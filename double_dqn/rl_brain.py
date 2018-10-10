@@ -32,10 +32,10 @@ class DoubleDQN:
         self.epsilon_increment = e_greedy_increment
         self.epsilon = 0 if e_greedy_increment is not None else self.epsilon_max
 
-        self.double_q = double_q    # decide to use double q or not
+        self.double_q = double_q  # decide to use double q or not
 
         self.learn_step_counter = 0
-        self.memory = np.zeros((self.memory_size, n_features*2+2))
+        self.memory = np.zeros((self.memory_size, n_features * 2 + 2))
         self._build_net()
         t_params = tf.get_collection('target_net_params')
         e_params = tf.get_collection('eval_net_params')
@@ -62,6 +62,7 @@ class DoubleDQN:
                 b2 = tf.get_variable('b2', [1, self.n_actions], initializer=b_initializer, collections=c_names)
                 out = tf.matmul(l1, w2) + b2
             return out
+
         # ------------------ build evaluate_net ------------------
         self.s = tf.placeholder(tf.float32, [None, self.n_features], name='s')  # input
         self.q_target = tf.placeholder(tf.float32, [None, self.n_actions], name='Q_target')  # for calculating loss
@@ -79,7 +80,7 @@ class DoubleDQN:
             self._train_op = tf.train.RMSPropOptimizer(self.lr).minimize(self.loss)
 
         # ------------------ build target_net ------------------
-        self.s_ = tf.placeholder(tf.float32, [None, self.n_features], name='s_')    # input
+        self.s_ = tf.placeholder(tf.float32, [None, self.n_features], name='s_')  # input
         with tf.variable_scope('target_net'):
             c_names = ['target_net_params', tf.GraphKeys.GLOBAL_VARIABLES]
 
@@ -101,7 +102,7 @@ class DoubleDQN:
         if not hasattr(self, 'q'):  # record action value it gets
             self.q = []
             self.running_q = 0
-        self.running_q = self.running_q*0.99 + 0.01 * np.max(actions_value)
+        self.running_q = self.running_q * 0.99 + 0.01 * np.max(actions_value)
         self.q.append(self.running_q)
 
         if np.random.uniform() > self.epsilon:  # choosing action
@@ -121,8 +122,8 @@ class DoubleDQN:
 
         q_next, q_eval4next = self.sess.run(
             [self.q_next, self.q_eval],
-            feed_dict={self.s_: batch_memory[:, -self.n_features:],    # next observation
-                       self.s: batch_memory[:, -self.n_features:]})    # next observation
+            feed_dict={self.s_: batch_memory[:, -self.n_features:],  # next observation
+                       self.s: batch_memory[:, -self.n_features:]})  # next observation
         q_eval = self.sess.run(self.q_eval, {self.s: batch_memory[:, :self.n_features]})
 
         q_target = q_eval.copy()
@@ -132,10 +133,11 @@ class DoubleDQN:
         reward = batch_memory[:, self.n_features + 1]
 
         if self.double_q:
-            max_act4next = np.argmax(q_eval4next, axis=1)        # the action that brings the highest value is evaluated by q_eval
+            max_act4next = np.argmax(q_eval4next,
+                                     axis=1)  # the action that brings the highest value is evaluated by q_eval
             selected_q_next = q_next[batch_index, max_act4next]  # Double DQN, select q_next depending on above actions
         else:
-            selected_q_next = np.max(q_next, axis=1)    # the natural DQN
+            selected_q_next = np.max(q_next, axis=1)  # the natural DQN
 
         q_target[batch_index, eval_act_index] = reward + self.gamma * selected_q_next
 
